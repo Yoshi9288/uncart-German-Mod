@@ -27,7 +27,7 @@ static void ClearTop(void) {
 }
 
 static void wait_key(void) {
-    Debug("Press key to continue...");
+    Debug("Dreuecke Die A-Taste zum fortfahren ...");
     InputWait();
 }
 
@@ -46,7 +46,7 @@ static int dump_cart_region(u32 start_sector, u32 end_sector, FIL* output_file, 
     u32 current_sector = start_sector;
     while (current_sector < end_sector) {
         unsigned int percentage = current_sector * 100 / ctx->cart_size;
-        Debug("Dumping %08X / %08X - %3u%%", current_sector, ctx->cart_size, percentage);
+        Debug("Dumpe %08X / %08X - %3u%%", current_sector, ctx->cart_size, percentage);
 
         u8* read_ptr = ctx->buffer;
         while (read_ptr < ctx->buffer + ctx->buffer_size && current_sector < end_sector) {
@@ -67,10 +67,10 @@ static int dump_cart_region(u32 start_sector, u32 end_sector, FIL* output_file, 
         while (write_ptr < read_ptr) {
             unsigned int bytes_written = 0;
             f_write(output_file, write_ptr, (size_t)(read_ptr - write_ptr), &bytes_written);
-            Debug("Wrote 0x%x bytes...", bytes_written);
+            Debug("Geschriebene bytes 0x%x ...", bytes_written);
 
             if (bytes_written == 0) {
-                Debug("Writing failed! :( SD full?");
+                Debug("Schreiben fehlgeschlagen! :( SD Karte voll?");
                 return -1;
             }
 
@@ -87,8 +87,9 @@ restart_program:
     // Setup boring stuff - clear the screen, initialize SD output, etc...
     ClearTop();
     
-    Debug("Uncart: ROM dump tool v0.2");
-    Debug("Insert your game cart now.");
+    Debug("Uncart: ROM dump tool v0.2 German Mod");
+	Debug("von Yoshi9288");
+    Debug("Stecke dein Spielmodul nun ein.");
     wait_key();
 
     // Arbitrary target buffer
@@ -107,15 +108,15 @@ restart_program:
     // ROM DUMPING CODE STARTS HERE
 
     Cart_Init();
-    Debug("Cart id is %08x", Cart_GetID());
-    Debug("Reading NCCH header...");
+    Debug("Modul id ist %08x", Cart_GetID());
+    Debug("Lese den NCCH header...");
     CTR_CmdReadHeader(ncchHeader);
-    Debug("Done reading NCCH header.");
+    Debug("Der NCCH header wurde gelesen.");
 
     if (strncmp((const char*)(ncchHeader->magic), "NCCH", 4))
     {
-        Debug("NCCH magic not found in header!!!");
-        Debug("Press A to continue anyway.");
+        Debug("NCCH Magie nicht im header gefunden!!!");
+        Debug("Druecke A um fortzufahren.");
         if (!(InputWait() & BUTTON_A))
             goto restart_prompt;
     }
@@ -126,13 +127,13 @@ restart_program:
     // Guess 0x200 first for the media size. this will be set correctly once the cart header is read 
     // Read out the header 0x0000-0x1000
     Cart_Dummy();
-    Debug("Reading NCSD header...");
+    Debug("Lese den NCSD header...");
     CTR_CmdReadData(0, 0x200, 0x1000 / 0x200, target);
-    Debug("Done reading NCSD header.");
+    Debug("Der NCSD header wurde gelesen.");
     
     if (strncmp((const char*)(ncsdHeader->magic), "NCSD", 4)) {
-        Debug("NCSD magic not found in header!!!");
-        Debug("Press A to continue anyway.");
+        Debug("NCSD Magie  nicht im header gefunden!!!");
+        Debug("Druecke A um fortzufahren.");
         if (!(InputWait() & BUTTON_A))
             goto restart_prompt;
     }
@@ -146,7 +147,7 @@ restart_program:
         cartSize += ncsdHeader->offsetsize_table[i].size;
     }
 
-    Debug("Cart data size: %llu MB", (u64)cartSize * (u64)mediaUnit / 1024ull / 1024ull);
+    Debug("Spielmodul Datengroesse: %llu MB", (u64)cartSize * (u64)mediaUnit / 1024ull / 1024ull);
 
     struct Context context = {
         .buffer = (u8*)target,
@@ -164,20 +165,20 @@ restart_program:
         char filename_buf[32];
         char extension_digit = cartSize <= file_max_blocks ? 's' : '0' + current_part;
         snprintf(filename_buf, sizeof(filename_buf), "/%.16s.3d%c", ncchHeader->product_code, extension_digit);
-        Debug("Writing to file: \"%s\"", filename_buf);
-        Debug("Change the SD card now and/or press a key.");
-        Debug("(Or SELECT to cancel)");
+        Debug("Schreibe in Datei: \"%s\"", filename_buf);
+        Debug("Wechsle die SD-Karte jetzt oder/und druecke eine Taste.");
+        Debug("(Oder SELECT zum abbrechen)");
         if (InputWait() & BUTTON_SELECT)
             break;
 
         if (f_mount(&fs, "0:", 0) != FR_OK) {
-            Debug("Failed to f_mount... Retrying");
+            Debug("f_mount fehlgeschlagen... Erneuter versuch");
             wait_key();
             goto cleanup_none;
         }
 
         if (f_open(&file, filename_buf, FA_READ | FA_WRITE | FA_CREATE_ALWAYS) != FR_OK) {
-            Debug("Failed to create file... Retrying");
+            Debug("Fehler beim erstellen der Datei... Erneuter Versuch");
             wait_key();
             goto cleanup_mount;
         }
@@ -201,7 +202,7 @@ restart_program:
             f_write(&file, ncchHeader, 0x3000, &written);
         }
 
-        Debug("Done!");
+        Debug("Fertig!");
         current_part += 1;
 
 cleanup_file:
@@ -215,7 +216,7 @@ cleanup_none:
     }
 
 restart_prompt:
-    Debug("Press B to exit, any other key to restart.");
+    Debug("Druecke B zum beenden, oder eine andere Taste zum Neustart.");
     if (!(InputWait() & BUTTON_B))
         goto restart_program;
 
