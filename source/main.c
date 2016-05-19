@@ -27,7 +27,7 @@ static void ClearTop(void) {
 }
 
 static void wait_key(void) {
-    Debug("Dreuecke Die A-Taste zum fortfahren ...");
+    Debug("Druecke die A-Taste zum fortfahren ...");
     InputWait();
 }
 
@@ -88,7 +88,7 @@ restart_program:
     ClearTop();
     
     Debug("Uncart: ROM dump tool v0.2 German Mod");
-	Debug("von Yoshi9288");
+    Debug("von Yoshi9288");
     Debug("Stecke dein Spielmodul nun ein.");
     wait_key();
 
@@ -109,13 +109,13 @@ restart_program:
 
     Cart_Init();
     Debug("Modul id ist %08x", Cart_GetID());
-    Debug("Lese den NCCH header...");
+    Debug("Lese den NCCH Header...");
     CTR_CmdReadHeader(ncchHeader);
     Debug("Der NCCH header wurde gelesen.");
 
     if (strncmp((const char*)(ncchHeader->magic), "NCCH", 4))
     {
-        Debug("NCCH Magie nicht im header gefunden!!!");
+        Debug("NCCH Hash nicht im Header gefunden!!!");
         Debug("Druecke A um fortzufahren.");
         if (!(InputWait() & BUTTON_A))
             goto restart_prompt;
@@ -127,12 +127,12 @@ restart_program:
     // Guess 0x200 first for the media size. this will be set correctly once the cart header is read 
     // Read out the header 0x0000-0x1000
     Cart_Dummy();
-    Debug("Lese den NCSD header...");
+    Debug("Lese den NCSD Header...");
     CTR_CmdReadData(0, 0x200, 0x1000 / 0x200, target);
-    Debug("Der NCSD header wurde gelesen.");
+    Debug("Der NCSD Header wurde gelesen.");
     
     if (strncmp((const char*)(ncsdHeader->magic), "NCSD", 4)) {
-        Debug("NCSD Magie  nicht im header gefunden!!!");
+        Debug("NCSD Hash nicht im Header gefunden!!!");
         Debug("Druecke A um fortzufahren.");
         if (!(InputWait() & BUTTON_A))
             goto restart_prompt;
