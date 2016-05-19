@@ -86,7 +86,6 @@ int main() {
 restart_program:
     // Setup boring stuff - clear the screen, initialize SD output, etc...
     ClearTop();
-    
     Debug("Uncart: ROM dump tool v0.2 German Mod");
     Debug("von Yoshi9288");
     Debug("Stecke dein Spielmodul nun ein.");
@@ -127,9 +126,9 @@ restart_program:
     // Guess 0x200 first for the media size. this will be set correctly once the cart header is read 
     // Read out the header 0x0000-0x1000
     Cart_Dummy();
-    Debug("Lese den NCSD Header...");
+    Debug(" Lese den NCSD Header...");
     CTR_CmdReadData(0, 0x200, 0x1000 / 0x200, target);
-    Debug("Der NCSD Header wurde gelesen.");
+    Debug(" Der NCSD Header wurde gelesen.");
     
     if (strncmp((const char*)(ncsdHeader->magic), "NCSD", 4)) {
         Debug("NCSD Hash nicht im Header gefunden!!!");
@@ -166,7 +165,7 @@ restart_program:
         char extension_digit = cartSize <= file_max_blocks ? 's' : '0' + current_part;
         snprintf(filename_buf, sizeof(filename_buf), "/%.16s.3d%c", ncchHeader->product_code, extension_digit);
         Debug("Schreibe in Datei: \"%s\"", filename_buf);
-        Debug("Wechsle die SD-Karte jetzt oder/und druecke eine Taste.");
+        Debug("Wechsle die SD-Karte jetzt oder/und druecke A .");
         Debug("(Oder SELECT zum abbrechen)");
         if (InputWait() & BUTTON_SELECT)
             break;
